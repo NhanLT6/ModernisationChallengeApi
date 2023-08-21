@@ -1,3 +1,5 @@
+using AutoMapper;
+
 using Microsoft.AspNetCore.Mvc;
 
 using ModernisationChallengeApi.Dtos.TaskDtos;
@@ -13,72 +15,72 @@ public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
 
-    public TaskController(ITaskService taskService) => _taskService = taskService;
+    private readonly IMapper _mapper;
+
+    public TaskController(ITaskService taskService, IMapper mapper)
+    {
+        _taskService = taskService;
+        _mapper = mapper;
+    }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Task>>> GetTasks()
+    public async Task<ActionResult<IEnumerable<TaskResponse>>> GetTasks()
     {
         List<Task> tasks = await _taskService.GetTasksAsync();
+        var taskResponses = _mapper.Map<IEnumerable<TaskResponse>>(tasks);
 
-        return Ok(tasks);
+        return Ok(taskResponses);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<Task>> GetTask(int id)
+    public async Task<ActionResult<TaskResponse>> GetTask(int id)
     {
         Task? task = await _taskService.GetTaskAsync(id);
-        if (task is null)
-        {
-            return NotFound();
-        }
+        if (task is null) return NotFound();
 
-        return Ok(task);
+        var taskResponse = _mapper.Map<TaskResponse>(task);
+
+        return Ok(taskResponse);
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateTask(UpdateTaskRequest request)
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<TaskResponse>> UpdateTask(int id, UpsertTaskRequest request)
     {
-        Task? task = await _taskService.GetTaskAsync(request.Id);
-        if (task is null)
-        {
-            return NotFound();
-        }
+        Task? task = await _taskService.GetTaskAsync(id);
+        if (task is null) return NotFound();
 
-        Task<Task> updatedTask = _taskService.UpdateTaskAsync(request);
+        Task updatedTask = await _taskService.UpdateTaskAsync(id, request);
+        var taskResponse = _mapper.Map<TaskResponse>(updatedTask);
 
-        return Ok(updatedTask);
+        return Ok(taskResponse);
     }
 
     [HttpPut("{id:int}/status")]
-    public async Task<IActionResult> UpdateTaskStatus(UpdateTaskStatusRequest request, int id)
+    public async Task<ActionResult<TaskResponse>> UpdateTaskStatus(int id, bool isCompleted)
     {
-        Task? task = await _taskService.GetTaskAsync(request.Id);
-        if (task is null)
-        {
-            return NotFound();
-        }
+        Task? task = await _taskService.GetTaskAsync(id);
+        if (task is null) return NotFound();
 
-        Task<Task> updatedTask = _taskService.UpdateTaskStatusAsync(request);
+        Task updatedTask = await _taskService.UpdateTaskCompleteStatusAsync(id, isCompleted);
+        var taskResponse = _mapper.Map<TaskResponse>(updatedTask);
 
-        return Ok(updatedTask);
+        return Ok(taskResponse);
     }
 
     [HttpPost]
-    public async Task<ActionResult<Task>> CreateTask(CreateTaskRequest request)
+    public async Task<ActionResult<TaskResponse>> CreateTask(UpsertTaskRequest request)
     {
         Task task = await _taskService.CreateTaskAsync(request);
+        var taskResponse = _mapper.Map<TaskResponse>(task);
 
-        return Ok(task);
+        return Ok(taskResponse);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteTask(int id)
     {
         Task? task = await _taskService.GetTaskAsync(id);
-        if (task is null)
-        {
-            return NotFound();
-        }
+        if (task is null) return NotFound();
 
         await _taskService.DeleteTaskAsync(id);
 

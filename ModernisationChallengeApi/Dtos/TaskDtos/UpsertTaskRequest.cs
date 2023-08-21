@@ -1,6 +1,6 @@
 ﻿namespace ModernisationChallengeApi.Dtos.TaskDtos;
 
-public class CreateTaskRequest
+public class UpsertTaskRequest
 {
     public string Details { get; set; } = string.Empty;
 }

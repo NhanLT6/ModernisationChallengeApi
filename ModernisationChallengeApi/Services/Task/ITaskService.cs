@@ -8,11 +8,11 @@ public interface ITaskService
 
     public Task<Models.Task?> GetTaskAsync(int id);
 
-    public Task<Models.Task> CreateTaskAsync(CreateTaskRequest task);
+    public Task<Models.Task> CreateTaskAsync(UpsertTaskRequest task);
 
-    public Task<Models.Task> UpdateTaskAsync(UpdateTaskRequest task);
+    public Task<Models.Task> UpdateTaskAsync(int id, UpsertTaskRequest task);
 
-    public Task<Models.Task> UpdateTaskStatusAsync(UpdateTaskStatusRequest task);
+    public Task<Models.Task> UpdateTaskCompleteStatusAsync(int id, bool isCompleted);
 
     public System.Threading.Tasks.Task DeleteTaskAsync(int id);
 }

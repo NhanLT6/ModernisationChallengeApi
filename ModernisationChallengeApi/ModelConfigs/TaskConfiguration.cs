@@ -9,7 +9,7 @@ public class TaskConfiguration : IEntityTypeConfiguration<Task>
 {
     public void Configure(EntityTypeBuilder<Task> builder)
     {
-        builder.ToTable("Task");
+        builder.ToTable("Tasks");
         builder.HasKey(t => t.Id);
 
         builder.Property(t => t.Id).IsRequired();

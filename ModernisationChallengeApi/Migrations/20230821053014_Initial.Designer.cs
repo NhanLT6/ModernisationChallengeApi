@@ -12,7 +12,7 @@ using ModernisationChallengeApi.Data;
 namespace ModernisationChallengeApi.Migrations
 {
     [DbContext(typeof(ModernisationChallengeContext))]
-    [Migration("20230820151823_Initial")]
+    [Migration("20230821053014_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,7 +50,7 @@ namespace ModernisationChallengeApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Task");
+                    b.ToTable("Tasks");
                 });
 #pragma warning restore 612, 618
         }

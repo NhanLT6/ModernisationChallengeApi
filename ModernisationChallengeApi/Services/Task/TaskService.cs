@@ -11,11 +11,11 @@ public class TaskService : ITaskService
 
     public TaskService(ModernisationChallengeContext context) => _context = context;
 
-    public async Task<List<Models.Task>> GetTasksAsync() => await _context.Task.ToListAsync();
+    public async Task<List<Models.Task>> GetTasksAsync() => await _context.Tasks.ToListAsync();
 
-    public async Task<Models.Task?> GetTaskAsync(int id) => await _context.Task.FirstOrDefaultAsync(t => t.Id == id);
+    public async Task<Models.Task?> GetTaskAsync(int id) => await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
 
-    public async Task<Models.Task> CreateTaskAsync(CreateTaskRequest task)
+    public async Task<Models.Task> CreateTaskAsync(UpsertTaskRequest task)
     {
         var newTask = new Models.Task
         {
@@ -26,36 +26,32 @@ public class TaskService : ITaskService
             Details = task.Details
         };
 
-        _context.Task.Add(newTask);
+        _context.Tasks.Add(newTask);
         await _context.SaveChangesAsync();
 
         return newTask;
     }
 
-    public async Task<Models.Task> UpdateTaskAsync(UpdateTaskRequest task)
+    public async Task<Models.Task> UpdateTaskAsync(int id, UpsertTaskRequest task)
     {
-        Models.Task? taskToUpdate = await _context.Task.FirstOrDefaultAsync(t => t.Id == task.Id);
-        if (taskToUpdate is null)
-        {
-            throw new ArgumentException("Task not found");
-        }
+        Models.Task? taskToUpdate = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+        if (taskToUpdate is null) throw new ArgumentException("Task not found");
 
         taskToUpdate.Details = task.Details;
+        taskToUpdate.DateModified = DateTime.Now;
 
         await _context.SaveChangesAsync();
 
         return taskToUpdate;
     }
 
-    public async Task<Models.Task> UpdateTaskStatusAsync(UpdateTaskStatusRequest task)
+    public async Task<Models.Task> UpdateTaskCompleteStatusAsync(int id, bool isCompleted)
     {
-        Models.Task? taskToUpdate = await _context.Task.FirstOrDefaultAsync(t => t.Id == task.Id);
-        if (taskToUpdate is null)
-        {
-            throw new ArgumentException("Task not found");
-        }
+        Models.Task? taskToUpdate = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+        if (taskToUpdate is null) throw new ArgumentException("Task not found");
 
-        taskToUpdate.Completed = task.Completed;
+        taskToUpdate.Completed = isCompleted;
+        taskToUpdate.DateModified = DateTime.Now;
 
         await _context.SaveChangesAsync();
 
@@ -64,13 +60,10 @@ public class TaskService : ITaskService
 
     public async System.Threading.Tasks.Task DeleteTaskAsync(int id)
     {
-        Models.Task? taskToDelete = await _context.Task.FirstOrDefaultAsync(t => t.Id == id);
-        if (taskToDelete is null)
-        {
-            throw new ArgumentException("Task not found");
-        }
+        Models.Task? taskToDelete = await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
+        if (taskToDelete is null) throw new ArgumentException("Task not found");
 
-        _context.Task.Remove(taskToDelete);
+        taskToDelete.DateDeleted = DateTime.Now;
         await _context.SaveChangesAsync();
     }
 }
