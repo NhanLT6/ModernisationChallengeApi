@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 using ModernisationChallengeApi.Data;
+using ModernisationChallengeApi.Filters;
 using ModernisationChallengeApi.Services.Task;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,7 @@ builder.Services.AddDbContext<ModernisationChallengeContext>(
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options => options.Filters.Add<AppExceptionFilter>());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

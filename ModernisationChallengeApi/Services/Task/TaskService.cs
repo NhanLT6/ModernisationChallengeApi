@@ -17,10 +17,12 @@ public class TaskService : ITaskService
 
     public async Task<Models.Task> CreateTaskAsync(UpsertTaskRequest task)
     {
+        DateTime now = DateTime.Now;
+
         var newTask = new Models.Task
         {
-            DateCreated = DateTime.Now,
-            DateModified = DateTime.Now,
+            DateCreated = now,
+            DateModified = now,
             DateDeleted = null,
             Completed = false,
             Details = task.Details
