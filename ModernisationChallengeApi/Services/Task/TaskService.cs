@@ -2,6 +2,7 @@
 
 using ModernisationChallengeApi.Data;
 using ModernisationChallengeApi.Dtos.TaskDtos;
+using ModernisationChallengeApi.Models;
 
 namespace ModernisationChallengeApi.Services.Task;
 
@@ -11,7 +12,19 @@ public class TaskService : ITaskService
 
     public TaskService(ModernisationChallengeContext context) => _context = context;
 
-    public async Task<List<Models.Task>> GetTasksAsync() => await _context.Tasks.ToListAsync();
+    public async Task<List<Models.Task>> GetTasksAsync(Paging paging)
+    {
+        // No paging, return whole list of Tasks
+        if (paging.PageSize == -1) return await _context.Tasks.ToListAsync();
+
+        // Paging if needed
+        List<Models.Task> pagedTasks = await _context.Tasks
+            .Skip(paging.PageIndex * paging.PageSize)
+            .Take(paging.PageSize)
+            .ToListAsync();
+
+        return pagedTasks;
+    }
 
     public async Task<Models.Task?> GetTaskAsync(int id) => await _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
 

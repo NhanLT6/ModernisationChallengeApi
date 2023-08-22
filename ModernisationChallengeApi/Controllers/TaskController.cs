@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 using ModernisationChallengeApi.Dtos.TaskDtos;
+using ModernisationChallengeApi.Models;
 using ModernisationChallengeApi.Services.Task;
 
 using Task = ModernisationChallengeApi.Models.Task;
@@ -24,9 +25,9 @@ public class TaskController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TaskResponse>>> GetTasks()
+    public async Task<ActionResult<IEnumerable<TaskResponse>>> GetTasks([FromQuery] Paging paging)
     {
-        List<Task> tasks = await _taskService.GetTasksAsync();
+        List<Task> tasks = await _taskService.GetTasksAsync(paging);
         var taskResponses = _mapper.Map<IEnumerable<TaskResponse>>(tasks);
 
         return Ok(taskResponses);
@@ -55,7 +56,7 @@ public class TaskController : ControllerBase
         return Ok(taskResponse);
     }
 
-    [HttpPut("{id:int}/status")]
+    [HttpPut("{id:int}/status/{isCompleted:bool}")]
     public async Task<ActionResult<TaskResponse>> UpdateTaskStatus(int id, bool isCompleted)
     {
         Task? task = await _taskService.GetTaskAsync(id);

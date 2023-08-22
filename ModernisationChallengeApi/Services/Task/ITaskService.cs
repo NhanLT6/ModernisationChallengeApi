@@ -1,10 +1,11 @@
 ﻿using ModernisationChallengeApi.Dtos.TaskDtos;
+using ModernisationChallengeApi.Models;
 
 namespace ModernisationChallengeApi.Services.Task;
 
 public interface ITaskService
 {
-    public Task<List<Models.Task>> GetTasksAsync();
+    public Task<List<Models.Task>> GetTasksAsync(Paging paging);
 
     public Task<Models.Task?> GetTaskAsync(int id);
 
