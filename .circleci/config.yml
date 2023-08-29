@@ -25,10 +25,20 @@ jobs:
           command: |
             dotnet test
 
+  build:
+    docker:
+      - image: microsoft/dotnet:latest
+    steps:
+      - checkout
+      - run:
+          working_directory: ~/project
+          name: Build
+          command: dotnet build
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
-      - build-and-test
+      - build
