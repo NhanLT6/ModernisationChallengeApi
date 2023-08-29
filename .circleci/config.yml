@@ -32,8 +32,8 @@ jobs:
       name: win/default
     steps:
       - checkout
-      - restore_cache:
-          key:
+      # - restore_cache:
+      #     key:
       - run:
           name: "Install dependencies"
           command: dotnet restore
